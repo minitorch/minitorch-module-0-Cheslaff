@@ -93,14 +93,102 @@ def relu_back(x: float, y: float) -> float:
 # - sum: sum lists
 # - prod: take the product of lists
 
-def negList():
-    pass
 
-def addLists():
-    pass
+"""HIGH-ORDER FUNCTIONS"""
+# Personal Note: Callable[[float], float] takes one float & returns float
+def map(function: Callable[[float], float]) -> Callable[[Iterable[float]], Iterable[float]]:
+    """
+    map function - Higher-order.
 
-def prod():
-    pass
+    Arguments:
+        function: Function being mapped to iterable
+    Returns:
+        a function, which takes lst argument & applies function to each element
+    """
+    
+    return lambda lst: [function(x) for x in lst]
 
 
-# TODO: Implement for Task 0.3.
+def zipWith(zip_key: Callable[[float, float], float]) -> Callable[[Iterable[float], Iterable[float]], Iterable[float]]:
+    """
+    zipWith function - High-order.
+
+    Arguments:
+        zip_key: function used for zipping two iterables
+    Returns:
+        a function, which zips two Iterables using zip_key
+    """
+
+    return lambda lst1, lst2: [zip_key(a, b) for a, b in zip(lst1, lst2)]
+
+
+def reduce(function: Callable[[Iterable[float]], float]) -> Callable[[Iterable[float]], float]:
+    """
+    reduce function - High-order.
+
+    Arguments:
+        function: function used to reduce Iterable to one float scalar.
+    Returns:
+        a function, which takes array and reduces it using function argument.
+    """
+    return lambda lst: function(lst)
+
+
+"""COMMON FUNCTIONS"""
+def negList(lst: Iterable[float]) -> Iterable[float]:
+    """
+    negList function.
+    Arguments:
+        lst: Iterable to which neg function (see above) will be mapped.
+    Returns:
+        an Iterable object where each item was multiplied by -1
+    """
+    negative_map = map(neg)
+    return negative_map(lst)
+
+
+def addLists(lst1: Iterable[float], lst2: Iterable[float]) -> Iterable[float]:
+    """
+    addLists function.
+    Arguments:
+        lst1: Iterable term 1
+        lst2: Iterable term 2
+    Returns:
+        an Iterable, which is a result of elementwise addition of two lists.
+    """
+    zip_sum = zipWith(lambda a, b: a + b)
+    return zip_sum(lst1, lst2)
+
+
+def sum(lst: Iterable[float]) -> float:
+    """
+    sum function.
+    Arguments:
+        lst: List to be reduced using summation accross it.
+    Returns:
+        scalar value, which is a sum of Iterable.
+    """
+    def sum_function(lst: Iterable[float]):
+        out = 0
+        for item in lst:
+            out += item
+        return out
+    reduce_sum = reduce(sum_function)
+    return reduce_sum(lst)
+    
+
+def prod(lst: Iterable[float]) -> float:
+    """
+    prod function.
+    Arguments:
+        lst: Iterable to be reduced using multiplication accross it.
+    Returns:
+        scalar value, which is a product of Iterable
+    """
+    def mul_function(lst: Iterable[float]):
+        out = 1
+        for item in lst:
+            out *= item
+        return out
+    reduce_prod = reduce(mul_function)
+    return reduce_prod(lst)
