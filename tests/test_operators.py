@@ -1,7 +1,7 @@
 from typing import Callable, List, Tuple
 
 import pytest
-from hypothesis import given
+from hypothesis import given, assume
 from hypothesis.strategies import lists
 
 from minitorch import MathTest
@@ -108,7 +108,10 @@ def test_sigmoid(a: float) -> None:
     * It is  strictly increasing.
     """
     # TODO: Implement for Task 0.2.
-    raise NotImplementedError("Need to implement for Task 0.2")
+    assert 0. <= sigmoid(a) <= 1, "Should be in range [0, 1]"
+    assert_close(sigmoid(-a), 1 - sigmoid(a))
+    assert sigmoid(0.) == 0.5, "Sigmoid of 0 is 0.5"
+    assert sigmoid(a + 0.1) - sigmoid(a) > max(1, abs(a)) * 1e-10, "Should be strictly increasing"
 
 
 @pytest.mark.task0_2
@@ -116,32 +119,32 @@ def test_sigmoid(a: float) -> None:
 def test_transitive(a: float, b: float, c: float) -> None:
     """Test the transitive property of less-than (a < b and b < c implies a < c)"""
     # TODO: Implement for Task 0.2.
-    raise NotImplementedError("Need to implement for Task 0.2")
+    if lt(a, b) and lt(b, c):
+        assert lt(a, c)
 
 
 @pytest.mark.task0_2
 def test_symmetric() -> None:
-    """Write a test that ensures that :func:`minitorch.operators.mul` is symmetric, i.e.
-    gives the same value regardless of the order of its input.
-    """
-    # TODO: Implement for Task 0.2.
-    raise NotImplementedError("Need to implement for Task 0.2")
+    @given(small_floats, small_floats)
+    def test_sym_property(a: float, b: float) -> None:
+        assert_close(mul(a, b), mul(b, a))
+    test_sym_property()
 
 
 @pytest.mark.task0_2
 def test_distribute() -> None:
-    r"""Write a test that ensures that your operators distribute, i.e.
-    :math:`z \times (x + y) = z \times x + z \times y`
-    """
-    # TODO: Implement for Task 0.2.
-    raise NotImplementedError("Need to implement for Task 0.2")
+    @given(small_floats)
+    def test_dist(z: float, a: float, b: float) -> None:
+        assert mul(z, add(a, b)) == mul(z, a) + mul(z, b)
+    test_dist()
 
 
 @pytest.mark.task0_2
 def test_other() -> None:
-    """Write a test that ensures some other property holds for your functions."""
-    # TODO: Implement for Task 0.2.
-    raise NotImplementedError("Need to implement for Task 0.2")
+    @given(small_floats, small_floats)
+    def test_property(x: float) -> None:
+        assert neg(neg(x)) == x
+    test_property() 
 
 
 # ## Task 0.3  - Higher-order functions
